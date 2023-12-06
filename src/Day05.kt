@@ -22,7 +22,7 @@ fun main() {
             if (it.endsWith(":")) {
                 mapping = Mapping()
             } else if (it.isEmpty()) {
-                list.add(mapping!!)
+                // list.add(mapping!!)
                 mapping = null
             } else {
                 val split = it.split(" ")
@@ -31,12 +31,17 @@ fun main() {
                 val len = split[2].toLong()
                 val map = HashMap<Long, Long>()
                 for (i in 0..<len) {
-                    map[dest+i] = source+i
+                    // map[dest+i] = source+i
+                    seeds.forEachIndexed { ind, seed ->
+                        if (dest+i == seed) {
+                            seeds[ind] = source+i
+                        }
+                    }
                 }
-                mapping!!.maps.add(map)
+                // mapping!!.maps.add(map)
             }
         }
-        list.add(mapping!!)
+        /*list.add(mapping!!)
         list.forEachIndexed { ind, it ->
             println("$ind)")
             seeds.forEachIndexed { index, i ->
@@ -49,7 +54,7 @@ fun main() {
                     }
                 }
             }
-        }
+        }*/
         println(seeds)
         return seeds.min()
     }
