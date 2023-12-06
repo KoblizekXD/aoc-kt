@@ -3,11 +3,21 @@ import kotlin.concurrent.thread
 
 fun main() {
 
-    class Mapping {
-        val maps: ArrayList<HashMap<Long, Long>> = ArrayList()
+    data class Mapping(val source: Long, val dest: Long, val len: Long) {
+        fun has(i: Long): Boolean {
+            for (j in 0..<len) {
+                if (i == dest+j)
+                    return true
+            }
+            return false
+        }
 
-        override fun toString(): String {
-            return maps.toString()
+        fun get(i: Long): Long {
+            for (j in 0..<len) {
+                if (i == dest+j)
+                    return source+j
+            }
+            return -1
         }
     }
 
@@ -16,45 +26,34 @@ fun main() {
             .split(" ")
             .map { it.toLong() }.toMutableList()
         println("Seeds: $seeds")
-        val list = ArrayList<Mapping>()
-        var mapping: Mapping? = null
-        lines.subList(2, lines.size-1).forEach {
-            if (it.endsWith(":")) {
-                mapping = Mapping()
-            } else if (it.isEmpty()) {
-                // list.add(mapping!!)
-                mapping = null
-            } else {
-                val split = it.split(" ")
-                val source = split[0].toLong()
-                val dest = split[1].toLong()
-                val len = split[2].toLong()
-                val map = HashMap<Long, Long>()
-                for (i in 0..<len) {
-                    // map[dest+i] = source+i
-                    seeds.forEachIndexed { ind, seed ->
-                        if (dest+i == seed) {
-                            seeds[ind] = source+i
+        val map: List<List<Mapping>> = lines.subList(2, lines.size)
+            .splitIfIs("").map {
+                it.subList(1, it.size)
+            }.map { abc ->
+                abc.map { str ->
+                    val l = str.split(" ").map { it.toLong() }
+                    Mapping(l[0], l[1], l[2])
+                }
+            }
+        map.forEach { it ->
+            // println("===")
+            val wasChanged =
+            MutableList(seeds.size) {
+                false
+            }
+            it.forEach { map ->
+                if (!(wasChanged.all { c -> c })) {
+                    seeds.forEachIndexed { index, seed ->
+                        val has = map.get(seed)
+                        if (has != -1L && !wasChanged[index]) {
+                            // println("Changing $seed to $has")
+                            seeds[index] = has
+                            wasChanged[index] = true
                         }
                     }
                 }
-                // mapping!!.maps.add(map)
             }
         }
-        /*list.add(mapping!!)
-        list.forEachIndexed { ind, it ->
-            println("$ind)")
-            seeds.forEachIndexed { index, i ->
-                it.maps.forEach { map ->
-                    if (map.containsKey(i)) {
-                        if (index==2)
-                            println("Changing seed $i to ${map[i]}")
-                        seeds[index] = map[i]!!
-                        return@forEach
-                    }
-                }
-            }
-        }*/
         println(seeds)
         return seeds.min()
     }

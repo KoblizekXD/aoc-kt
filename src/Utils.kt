@@ -11,6 +11,21 @@ fun readInput(name: String) = Path("src/$name.txt").readLines()
 
 fun readIn(name: String) = Path("src/$name.txt").readText()
 
+fun List<String>.splitIfIs(string: String): List<List<String>> {
+    val list = ArrayList<ArrayList<String>>()
+    var buf = ArrayList<String>()
+    this.forEach {
+        if (it == string) {
+            list.add(buf)
+            buf = ArrayList()
+        } else {
+            buf.add(it)
+        }
+    }
+    list.add(buf)
+    return list
+}
+
 /**
  * Converts string to md5 hash.
  */
